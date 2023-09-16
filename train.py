@@ -29,7 +29,7 @@ class TextDataset(data.Dataset):
         x = torch.tensor([self.v_idx[char] for char in x_str], dtype=torch.long)
         y = torch.tensor([self.v_idx[char] for char in y_str], dtype=torch.long)
         return x, y
-    
+
 
 class Nizami:
     def __init__(self, model_path = None):
@@ -59,13 +59,13 @@ class Nizami:
             text = f.read()
 
         self.chars = list(text)
-        v = list(set(self.chars))
+        v = sorted(list(set(self.chars)))
         self.n_vocab = len(v)
 
         stoi = {ch:i for i, ch in enumerate(v)}
-        itos = {i:ch for i, ch in enumerate(v)}
+        self.itos = {i:ch for i, ch in enumerate(v)}
         self.encode = lambda s: [stoi[c] for c in s]
-        self.decode = lambda l: ''.join(itos[i] for i in l)
+        self.decode = lambda l: ''.join(self.itos[i] for i in l)
         
         self.data = torch.tensor(self.encode(text), dtype=torch.long)
         
