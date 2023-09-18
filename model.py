@@ -50,5 +50,6 @@ class LSTM(nn.Module):
     def forward(self, x, hidden):
         x = self.embedding(x)
         out, hidden = self.lstm(x, hidden)
+        # out = F.dropout(out, p=0.5)
         out = self.linear(out)
         return out, hidden
