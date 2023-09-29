@@ -50,8 +50,8 @@ Example text generation after a single epoch:
 
 ### Datasets
 The dataset to be trained can be put into the datasets folder. Originally, there are two datasets available:
-* nizami.txt: concatenated text of five books of Nizami Ganjavi, in Azerbaijani. **(~1.6M characters)**
-* tinyshakespear.txt: concatenated text of all the famous works of William Shakespear, in English. **(~ 1M characters)**
+* **nizami.txt**: concatenated text of five books of Nizami Ganjavi, in Azerbaijani. **(~1.6M characters)**
+* **tinyshakespeare.txt**: concatenated text of all the famous works of William Shakespearen, in English. **(~ 1M characters)**
 
 
 ### Training
