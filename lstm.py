@@ -8,10 +8,11 @@ from utils import BaseLanguageModel
 class LSTM(BaseLanguageModel):
     def __init__(self, model_path=None):
         super().__init__(
+            dataset="tinyshakespeare.txt",
             model_name="lstm",
             batch_size=128,
             eval_freq=200,
-            save_freq=5000,
+            save_freq=2000,
             block_size=200,
         )
         self.n_hidden = 64
@@ -49,5 +50,4 @@ if __name__ == "__main__":
     # model_path = 'models/model_5.pt'
     model_path = None
     lstm = LSTM(model_path)
-    lstm.step = 0
-    lstm.train(5000)
+    lstm.train(1)

@@ -43,5 +43,4 @@ class Bigram(BaseLanguageModel):
 if __name__ == "__main__":
     model_path = None
     nizami = Bigram(model_path)
-    nizami.step = 0
     nizami.train(10)
