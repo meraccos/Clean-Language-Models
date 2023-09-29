@@ -24,19 +24,12 @@ class Bigram(BaseLanguageModel):
             self.model.load_state_dict(torch.load(model_path))
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)
-    
-    # TODO this is a general function too
-    @torch.no_grad()
-    def generate(self, n_chars):
-        idx = [0]
-        x = torch.tensor(0)
-        for _ in range(n_chars):
-            x = self.model(x)
-            x = F.softmax(x, dim=0)
-            
-            x = torch.multinomial(x, 1)[0]
-            idx.append(x.item())
-        return self.decode(idx)
+
+    def generate_next_idx(self, x, hidden):
+        x = self.model(x)
+        x = F.softmax(x, dim=0)
+        x = torch.multinomial(x, 1)[0]
+        return x, hidden
     
     def eval_single_batch(self, x, y):
         output = self.model(x)
@@ -44,13 +37,7 @@ class Bigram(BaseLanguageModel):
         y = y.view(-1)
         loss = F.cross_entropy(output, y)
         return output, loss
-        
-        
-        
-        # TODO log frequency of the training?
-
-                
-                
+                        
 if __name__ == "__main__":
     model_path = None
     nizami = Bigram(model_path)

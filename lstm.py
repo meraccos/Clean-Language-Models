@@ -7,17 +7,17 @@ from utils import BaseLanguageModel
 
 class LSTM(BaseLanguageModel):
     def __init__(self, model_path = None):
-        self.super().__init__()
-        self.model_name = "lstm"
+        super().__init__(
+            model_name="lstm",
+            batch_size=128,
+            eval_freq=200,
+            save_freq=5000,
+            block_size=200,
+            )
         self.n_hidden = 64
-        self.batch_size = 128
-        self.block_size = 200
         self.num_layers = 1
-        self.lr = 0.01
-        
+        self.lr = 0.01        
         self.emb_size = 8
-        
-        self.writer = None
         self.prepare_model(model_path)
         
     def prepare_model(self, model_path=None):
@@ -31,7 +31,7 @@ class LSTM(BaseLanguageModel):
     def generate(self, n_gen_chars=150):
         self.model.eval()
         x = torch.tensor(0).view(1)
-        ix = [x.item()]
+        idx = [x.item()]
 
         hidden = None
         for _ in range(n_gen_chars):
@@ -39,9 +39,17 @@ class LSTM(BaseLanguageModel):
             x = F.softmax(x, dim=1)
             x = torch.multinomial(x, 1).squeeze(0)
             x = x.type(torch.int)
-            ix.append(x.item())
+            
+            idx.append(x.item())
         self.model.train()
-        return self.decode(ix)
+        return self.decode(idx)
+
+    def generate_next_idx(self, x, hidden):
+        x, hidden = self.model(x, hidden)
+        x = F.softmax(x, dim=1)
+        x = torch.multinomial(x, 1).squeeze(0)
+        x = x.type(torch.int)
+        return x, hidden
 
     def eval_single_batch(self, x, y):
         output, (h, c) = self.model(x, None)

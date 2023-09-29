@@ -23,51 +23,7 @@ class BaseLanguageModel:
         self.writer = None
         
         self.process_books()
-            
-    def save_model(self):
-        save_path = os.path.join("models", self.model_name)
-        save_idx = self.step // self.save_freq
-        os.makedirs(save_path, exist_ok=True)
-        save_file = os.path.join(save_path, f"{self.model_name}_{save_idx}.pt")
-        torch.save(self.model.state_dict(), save_file)
-
-    def eval_single_batch(self, x, y):
-        raise NotImplementedError("eval_single_batch not implemented")
-    
-    @torch.no_grad()
-    def evaluate(self):
-        self.model.eval()
-        losses = []
-        for x, y in self.val_dl:
-            output, loss = self.eval_single_batch(x, y)
-            losses.append(loss.sum())
-
-        self.writer.add_scalar('Eval/loss', sum(losses) / len(losses), self.step)
-        self.model.train()
-
-    def train(self, max_epoch):    
         
-        # init the writer here to avoid redundant logging during generation
-        if self.writer is None:
-            self.writer = SummaryWriter(comment='_' + self.model_name)    
-            
-        for epoch in tqdm(range(max_epoch)):
-            for x, y in tqdm(self.train_dl, leave=False):                
-                output, loss = self.eval_single_batch(x, y)
-                
-                self.writer.add_scalar('Train/loss', loss, self.step)
-                self.step += 1
-                
-                if self.step % self.save_freq == 0:
-                    self.save_model()
-
-                if self.step % self.eval_freq == 0:
-                    self.evaluate()
-
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
-                
     def process_books(self):  
         with open('books/nizami.txt', 'r') as f:
             text = f.read()
@@ -92,6 +48,63 @@ class BaseLanguageModel:
 
         self.train_dl = DataLoader(tr_dataset, batch_size=self.batch_size, shuffle=True)
         self.val_dl = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=True)
+        
+    def save_model(self):
+        save_path = os.path.join("models", self.model_name)
+        save_idx = self.step // self.save_freq
+        os.makedirs(save_path, exist_ok=True)
+        save_file = os.path.join(save_path, f"{self.model_name}_{save_idx}.pt")
+        torch.save(self.model.state_dict(), save_file)
+
+    def eval_single_batch(self, x, y):
+        raise NotImplementedError("eval_single_batch not implemented")
+    
+    @torch.no_grad()
+    def generate(self, n_chars):
+        self.model.eval()      
+        x = torch.tensor(self.encode('\n')[0])
+        hidden = None
+        
+        idx = [x.item()]
+        for _ in range(n_chars):
+            x, hidden = self.generate_next_idx(x, hidden)
+            idx.append(x.item())
+            
+        self.model.train()
+        return self.decode(idx)        
+
+    @torch.no_grad()
+    def evaluate(self):
+        self.model.eval()
+        losses = []
+        for x, y in self.val_dl:
+            output, loss = self.eval_single_batch(x, y)
+            losses.append(loss.sum())
+
+        self.writer.add_scalar('Eval/loss', sum(losses) / len(losses), self.step)
+        self.model.train()
+
+    def train(self, max_epoch):    
+        # init the writer here to avoid redundant logging in a new instance
+        if self.writer is None:
+            self.writer = SummaryWriter(comment='_' + self.model_name)    
+            
+        for epoch in tqdm(range(max_epoch)):
+            for x, y in tqdm(self.train_dl, leave=False):                
+                output, loss = self.eval_single_batch(x, y)
+                
+                self.writer.add_scalar('Train/loss', loss, self.step)
+                self.step += 1
+                
+                if self.step % self.save_freq == 0:
+                    self.save_model()
+
+                if self.step % self.eval_freq == 0:
+                    self.evaluate()
+
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
 
 class CharDataset(Dataset):
