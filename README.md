@@ -26,7 +26,7 @@ Example text generation after a single epoch:
 
 ## **LSTM Model**
 
-For train each model, just run:
+To train each model, run:
 ```python
 python3 <model name>.py
 ```
