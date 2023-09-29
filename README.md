@@ -6,7 +6,7 @@ Currently, the following models are available:
 
 Evaluation loss after a single epoch:
 <div align="center">
-  <img src="https://github.com/meraccos/nizami/blob/main/losses/bigram.svg" alt="Bigram loss Text" width="400" height="400">
+  <img src="https://github.com/meraccos/nizami/blob/main/losses/bigram.svg" alt="Bigram loss" width="400" height="400">
 </div>
 
 Example text generation after a single epoch:
@@ -26,6 +26,28 @@ Example text generation after a single epoch:
 
 ## **LSTM Model**
 
+Evaluation loss after a single epoch:
+<div align="center">
+  <img src="https://github.com/meraccos/nizami/blob/main/losses/lstm.svg" alt="LSTM loss" width="400" height="400">
+</div>
+
+Example text generation after a single epoch:
+
+<span style="background-color: lightgray; padding: 10px; display: block; text-align: center;">
+  <i>
+    
+    Do knight!  
+      
+    WARWICK:  
+    Whom good all fair east for a stristalle some their wind;  
+    She lords, Kings me? Nap I will is Warwer.  
+    Let you, grow gencuatchs of born tears?  
+    Whearor proed of France God iond and some none  
+    Which thou melmel buinty than and abters   
+  </i>
+</span>
+
+### Guidelines
 To train each model, run:
 ```python
 python3 <model name>.py
