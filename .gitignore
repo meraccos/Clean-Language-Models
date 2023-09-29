@@ -2,8 +2,7 @@ models
 runs
 preprocess
 books
-__pycache__/bigram.cpython-311.pyc
-__pycache__/model.cpython-311.pyc
-__pycache__/train.cpython-311.pyc
-__pycache__/train2.cpython-311.pyc
+test.ipynb
+random.ipynb
+*.pyc
 .DS_Store
