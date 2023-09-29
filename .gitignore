@@ -4,5 +4,5 @@ preprocess
 books
 test.ipynb
 random.ipynb
-*.pyc
+__pycache__
 .DS_Store
