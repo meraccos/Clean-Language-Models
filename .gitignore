@@ -1,7 +1,6 @@
 models
 runs
 preprocess
-books
 test.ipynb
 random.ipynb
 __pycache__
