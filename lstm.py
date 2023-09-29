@@ -8,10 +8,10 @@ from torch.utils.tensorboard import SummaryWriter
 import torch.utils.data as data
 from torch.utils.data import DataLoader
 
-from model import LSTM, CharDataset
+from model import LSTM_Network, CharDataset
     
 
-class Nizami:
+class LSTM:
     def __init__(self, model_path = None):
         self.n_hidden = 64
         self.batch_size = 128
@@ -29,7 +29,7 @@ class Nizami:
         self.prepare_model(model_path)
         
     def prepare_model(self, model_path=None):
-        self.model = LSTM(self.n_vocab, self.n_hidden, 
+        self.model = LSTM_Network(self.n_vocab, self.n_hidden, 
                           self.emb_size, self.num_layers)
         if model_path:
             self.model.load_state_dict(torch.load(model_path))
@@ -125,6 +125,6 @@ class Nizami:
 if __name__ == "__main__":
     # model_path = 'models/model_5.pt'
     model_path = None
-    nizami = Nizami(model_path)
-    nizami.step = 0
-    nizami.train(5000)
+    lstm = LSTM(model_path)
+    lstm.step = 0
+    lstm.train(5000)

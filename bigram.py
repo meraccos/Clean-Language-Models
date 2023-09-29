@@ -7,9 +7,9 @@ import torch.nn.functional as F
 import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
-import torch.utils.data as data
+# import torch.utils.data as data
 
-from model import BigramModel
+from model import Bigram_Network
 
 
 class Bigram:
@@ -27,11 +27,11 @@ class Bigram:
         self.writer = None
         
     def prepare_model(self, model_path=None):
-        self.model = BigramModel(self.n_vocab, self.n_hidden)
+        self.model = Bigram_Network(self.n_vocab, self.n_hidden)
         if model_path:
             self.model.load_state_dict(torch.load(model_path))
 
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)
     
     def process_books(self):  
         with open('books/nizami.txt', 'r') as f:
@@ -92,7 +92,7 @@ class Bigram:
         self.writer.add_scalar('Eval/loss', mean_loss, self.step)
         
     def train(self, max_epoch):    
-        if self.writer == None:
+        if self.writer is None:
             self.writer = SummaryWriter()    
             
         for epoch in tqdm(range(max_epoch)):

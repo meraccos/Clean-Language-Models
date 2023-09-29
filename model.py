@@ -16,7 +16,7 @@ class CharDataset(Dataset):
         return (self.data[index:index+self.seq_length], self.data[index+1:index+self.seq_length+1])
 
 
-class BigramModel(nn.Module):
+class Bigram_Network(nn.Module):
     def __init__(self, num_emb, embd):
         super().__init__()       
         self.emb = nn.Embedding(num_emb, embd)
@@ -31,7 +31,7 @@ class BigramModel(nn.Module):
         return x
 
 
-class LSTM(nn.Module):
+class LSTM_Network(nn.Module):
     def __init__(self, vocab_size, hidden_size, emb_size, num_layers = 1):
         super().__init__()
         self.hidden_size = hidden_size
