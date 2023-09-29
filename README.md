@@ -3,4 +3,5 @@ This repository contains the implementation of several character-level language 
 Currently, the following models are available:
 
 * Bigram
+![Bigram loss](https://github.com/meraccos/nizami/blob/main/losses/Eval_loss.svg)
 * LSTM
