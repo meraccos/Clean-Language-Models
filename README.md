@@ -1,5 +1,6 @@
 # Clean Language Models
-This repository contains the implementation of several character-level language models for text generation. The work aims at clarity in the implementation and modularity.
+This repository contains the implementation of several character-level language models for text generation. The work aims at clarity in the implementation and modularity.  
+
 Currently, the following models are available:
 
 ## **Bigram Model**
@@ -47,13 +48,19 @@ Example text generation after a single epoch:
   </i>
 </span>
 
-### Guidelines
+### Datasets
+The dataset to be trained can be put into the datasets folder. Originally, there are two datasets available:
+* nizami.txt: concatenated text of five books of Nizami Ganjavi, in Azerbaijani. **(~1.6M characters)**
+* tinyshakespear.txt: concatenated text of all the famous works of William Shakespear, in English. **(~ 1M characters)**
+
+
+### Training
 To train each model, run:
 ```python
 python3 <model name>.py
 ```
 
-To generate text from the latest saved model, run:
+To generate text from the latest saved model, run: (eg. LSTM, model lstm_3.pt, 250 characters)
 ```python
-python3 generate.py --model_name=<model name> --model_idx=<model_idx> --num_chars=<num_chars>
+python3 generate.py --model_name=lstm --model_idx=3 --num_chars=250
 ```
