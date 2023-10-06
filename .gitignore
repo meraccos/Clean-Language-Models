@@ -5,3 +5,6 @@ test.ipynb
 random.ipynb
 __pycache__
 .DS_Store
+*.onnx
+attention.ipynb
+torch_to_onnx.py

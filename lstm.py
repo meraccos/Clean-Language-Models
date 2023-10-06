@@ -8,24 +8,24 @@ from utils import BaseLanguageModel
 class LSTM(BaseLanguageModel):
     def __init__(self, model_path=None):
         super().__init__(
-            dataset="tinyshakespeare.txt",
+            dataset="nizami.txt",
             model_name="lstm",
-            batch_size=128,
+            batch_size=64,
             eval_freq=200,
-            save_freq=2000,
+            save_freq=1000,
             block_size=200,
         )
-        self.n_hidden = 64
+        self.hidden_size = 512
         self.num_layers = 1
         self.lr = 0.01
-        self.emb_size = 8
+        self.emb_size = 4
         self.prepare_model(model_path)
 
     def prepare_model(self, model_path=None):
         self.model = LSTM_Network(
-            self.n_vocab, self.n_hidden, self.emb_size, self.num_layers
+            self.n_vocab, self.hidden_size, self.emb_size, self.num_layers
         )
-        if model_path:
+        if model_path is not None:
             self.model.load_state_dict(torch.load(model_path))
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     # model_path = 'models/model_5.pt'
     model_path = None
     lstm = LSTM(model_path)
-    lstm.train(1)
+    lstm.train(3)
