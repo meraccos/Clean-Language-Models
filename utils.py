@@ -34,6 +34,8 @@ class BaseLanguageModel:
         self.chars = list(text)
         v = sorted(list(set(self.chars)))
         self.n_vocab = len(v)
+        with open(f'encodings/enc_{self.dataset}', 'w') as f:
+            f.write(''.join(v))
 
         stoi = {ch: i for i, ch in enumerate(v)}
         itos = {i: ch for i, ch in enumerate(v)}

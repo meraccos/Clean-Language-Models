@@ -8,14 +8,14 @@ from utils import BaseLanguageModel
 class LSTM(BaseLanguageModel):
     def __init__(self, model_path=None):
         super().__init__(
-            dataset="nizami.txt",
+            dataset="tinyshakespeare.txt",
             model_name="lstm",
             batch_size=64,
             eval_freq=200,
-            save_freq=1000,
+            save_freq=500,
             block_size=200,
         )
-        self.hidden_size = 512
+        self.hidden_size = 256
         self.num_layers = 1
         self.lr = 0.01
         self.emb_size = 4

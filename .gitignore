@@ -8,3 +8,4 @@ __pycache__
 *.onnx
 attention.ipynb
 torch_to_onnx.py
+*.txt
