@@ -8,17 +8,17 @@ from utils import BaseLanguageModel
 class LSTM(BaseLanguageModel):
     def __init__(self, model_path=None):
         super().__init__(
-            dataset="tinyshakespeare.txt",
+            dataset="nizami.txt",
             model_name="lstm",
             batch_size=64,
             eval_freq=200,
             save_freq=500,
             block_size=200,
         )
-        self.hidden_size = 256
-        self.num_layers = 1
+        self.hidden_size = 128
+        self.num_layers = 2
         self.lr = 0.01
-        self.emb_size = 4
+        self.emb_size = 5
         self.prepare_model(model_path)
 
     def prepare_model(self, model_path=None):
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     # model_path = 'models/model_5.pt'
     model_path = None
     lstm = LSTM(model_path)
-    lstm.train(3)
+    lstm.train(10)

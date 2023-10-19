@@ -2,10 +2,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class Attention_Network(nn.Module):
-    pass
-
-
 class Bigram_Network(nn.Module):
     def __init__(self, num_emb, embd):
         super().__init__()
@@ -32,7 +28,7 @@ class LSTM_Network(nn.Module):
             hidden_size=hidden_size,
             num_layers=num_layers,
             batch_first=True,
-            dropout=0.1
+            # dropout=0.3
         )
 
         self.linear = nn.Linear(hidden_size, vocab_size)
