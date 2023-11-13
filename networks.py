@@ -16,7 +16,8 @@ class Attention_Network(nn.Module):
         enc_layer = nn.TransformerEncoderLayer(d_model=embd,
                                                nhead=nhead)
         self.encoder = nn.TransformerEncoder(encoder_layer=enc_layer,
-                                             num_layers=n_layers)
+                                             num_layers=n_layers,
+                                             norm=nn.LayerNorm(embd))
         
         self.linear1 = nn.Linear(embd, ff_dim)
         self.linear2 = nn.Linear(ff_dim, n_vocab)
