@@ -17,10 +17,10 @@ class Attention(BaseLanguageModel):
             block_size=100,
         )
        
-        self.embd = 5
+        self.embd = 12
         self.ff_dim = 128
-        self.nhead = 1
-        self.n_layers = 1
+        self.nhead = 3
+        self.n_layers = 3
         self.lr = 0.02
         self.prepare_model(model_path)
 
