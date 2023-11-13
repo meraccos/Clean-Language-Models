@@ -27,7 +27,8 @@ class Attention_Network(nn.Module):
         tok_emb = self.tok_emb(x) 
         pos_emb = self.pos_emb(pos)
         x = tok_emb + pos_emb
-        m = self.get_mask(x)
+        m = nn.Transformer.generate_square_subsequent_mask(len(x))
+        # m = self.get_mask(x)
         x = x.permute(1, 0, 2)
         x = self.encoder(x, mask=m)
         x = x.permute(1, 0, 2)
