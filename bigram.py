@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 from networks import Bigram_Network
-from utils import BaseLanguageModel
+from base_model import BaseLanguageModel
 
 
 class Bigram(BaseLanguageModel):
