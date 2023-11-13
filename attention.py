@@ -10,14 +10,14 @@ class Attention(BaseLanguageModel):
         super().__init__(
             dataset="nizami.txt",
             model_name="attention",
-            batch_size=64,
+            batch_size=256,
             eval_freq=200,
             save_freq=500,
-            block_size=300,
+            block_size=200,
         )
        
         self.embd = 16
-        self.ff_dim = 64
+        self.ff_dim = 128
         self.nhead = 4
         self.n_layers = 1
         self.lr = 0.02
