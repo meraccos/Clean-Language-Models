@@ -28,7 +28,9 @@ class Attention_Network(nn.Module):
         pos_emb = self.pos_emb(pos)
         x = tok_emb + pos_emb
         m = self.get_mask(x)
+        x = x.permute(1, 0, 2)
         x = self.encoder(x, mask=m)
+        x = x.permute(1, 0, 2)
         x = self.linear1(x)
         x = F.relu(x)
         x = self.linear2(x)
@@ -36,7 +38,7 @@ class Attention_Network(nn.Module):
         return x
     
     def get_mask(self, x):
-        mask = torch.triu(torch.full((x.shape[0], x.shape[0]), float('-inf')), diagonal=1)
+        mask = torch.triu(torch.full((x.shape[1], x.shape[1]), float('-inf')), diagonal=1)
         return mask
         
 
