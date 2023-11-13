@@ -19,7 +19,7 @@ class Attention(BaseLanguageModel):
         self.embd = 16
         self.ff_dim = 64
         self.nhead = 4
-        self.n_layers = 3
+        self.n_layers = 1
         self.lr = 0.02
         self.prepare_model(model_path)
 
