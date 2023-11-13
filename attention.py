@@ -3,6 +3,7 @@ import torch.nn.functional as F
 
 from base_model import BaseLanguageModel
 from networks import Attention_Network
+from networks import Encoder
 
 
 class Attention(BaseLanguageModel):
@@ -13,10 +14,10 @@ class Attention(BaseLanguageModel):
             batch_size=256,
             eval_freq=200,
             save_freq=500,
-            block_size=200,
+            block_size=100,
         )
        
-        self.embd = 16
+        self.embd = 5
         self.ff_dim = 128
         self.nhead = 1
         self.n_layers = 1
@@ -27,6 +28,14 @@ class Attention(BaseLanguageModel):
         self.model = Attention_Network(
             self.n_vocab, self.embd, self.nhead, self.n_layers, self.ff_dim, self.block_size
         )
+        
+        self.model = Encoder(72, 
+              self.embd, 
+              self.n_layers, 
+              self.nhead, 
+              self.ff_dim, 
+              0.1, 
+              'cpu')
         if model_path is not None:
             self.model.load_state_dict(torch.load(model_path))
 
@@ -41,8 +50,9 @@ class Attention(BaseLanguageModel):
         return x, hidden
 
     def eval_single_batch(self, x, y):
-        output = self.model(x)        
-        loss = F.cross_entropy(output.view(-1, self.n_vocab), y.view(-1))
+        m = torch.nn.Transformer.generate_square_subsequent_mask(self.block_size)
+        output = self.model(x, src_mask=m)        
+        loss = F.cross_entropy(output.contiguous().view(-1, self.n_vocab), y.contiguous().view(-1))
         
         return output, loss
 
