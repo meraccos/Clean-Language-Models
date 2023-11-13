@@ -35,7 +35,7 @@ class Attention_Network(nn.Module):
         return x
     
     def get_mask(self, x):
-        mask = torch.triu(torch.full((x.shape[1], x.shape[1]), float('-inf')), diagonal=1)
+        mask = torch.triu(torch.full((x.shape[0], x.shape[0]), float('-inf')), diagonal=1)
         return mask
         
 
