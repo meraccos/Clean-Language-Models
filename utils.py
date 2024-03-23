@@ -1,9 +1,6 @@
-import torch
-from torch.utils.data import Dataset, DataLoader
-from torch.utils.tensorboard import SummaryWriter
-from tqdm import tqdm
 import math
-import os
+import torch
+from torch.utils.data import Dataset
 
 
 class CharDataset(Dataset):
