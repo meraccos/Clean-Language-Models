@@ -57,18 +57,15 @@ class BaseLanguageModel:
         self.encode = lambda s: [stoi[c] for c in s]
         self.decode = lambda l: "".join(itos[i] for i in l)
 
-        # Split the data into train and validation
+        # Split the data
         data = torch.tensor(self.encode(text)).long()
 
         n = int(self.train_portion * len(data))
-        train_data = data[:n]
-        val_data = data[n:]
+        train_ds = CharDataset(data[:n], self.block_size)
+        valid_ds = CharDataset(data[n:], self.block_size)
 
-        tr_dataset = CharDataset(train_data, self.block_size)
-        val_dataset = CharDataset(val_data, self.block_size)
-
-        self.train_dl = DataLoader(tr_dataset, batch_size=self.batch_size, shuffle=True)
-        self.val_dl = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=True)
+        self.train_dl = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True)
+        self.valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, shuffle=True)
 
     def save_model(self):
         save_path = os.path.join("models", self.model_name)
@@ -97,7 +94,7 @@ class BaseLanguageModel:
     def evaluate(self):
         self.model.eval()
         losses = []
-        for x, y in self.val_dl:
+        for x, y in self.valid_dl:
             output, loss = self.eval_single_batch(x, y)
             losses.append(loss.item())
 
