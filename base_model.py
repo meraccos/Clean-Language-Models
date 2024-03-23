@@ -9,14 +9,18 @@ from utils import CharDataset
 
 
 class BaseLanguageModel:
+    """
+    Base class for all the language models
+    """
     def __init__(
         self,
         dataset="nizami.txt",
         model_name="base",
         batch_size=64,
+        block_size=200,
         eval_freq=200,
         save_freq=5000,
-        block_size=200,
+        train_portion=0.98
     ):
         self.dataset = dataset
         self.model_name = model_name
@@ -24,6 +28,7 @@ class BaseLanguageModel:
         self.block_size = block_size
         self.eval_freq = eval_freq
         self.save_freq = save_freq
+        self.train_portion = train_portion
 
         self.step = 0
         self.writer = None
@@ -31,24 +36,31 @@ class BaseLanguageModel:
         self.process_data()
 
     def process_data(self):
+        # Process the text file
         with open(os.path.join('datasets', self.dataset), "r") as f:
             text = f.read()
 
         self.chars = list(text)
+        
+        # Generate the vocabulary
         v = sorted(list(set(self.chars)))
         self.n_vocab = len(v)
+
+        # Save the encodings for further decoding
         with open(f'encodings/enc_{self.dataset}', 'w') as f:
             f.write(''.join(v))
 
+        # Translation functions
         stoi = {ch: i for i, ch in enumerate(v)}
         itos = {i: ch for i, ch in enumerate(v)}
         
         self.encode = lambda s: [stoi[c] for c in s]
         self.decode = lambda l: "".join(itos[i] for i in l)
 
+        # Split the data into train and validation
         data = torch.tensor(self.encode(text)).long()
 
-        n = int(0.98 * len(data))
+        n = int(self.train_portion * len(data))
         train_data = data[:n]
         val_data = data[n:]
 
@@ -79,7 +91,6 @@ class BaseLanguageModel:
             x, hidden = self.generate_next_idx(x, hidden)
             idx.append(x.item())
 
-        self.model.train()
         return self.decode(idx)
 
     @torch.no_grad()
@@ -88,25 +99,23 @@ class BaseLanguageModel:
         losses = []
         for x, y in self.val_dl:
             output, loss = self.eval_single_batch(x, y)
-            losses.append(loss.sum())
+            losses.append(loss.item())
 
-        self.writer.add_scalar("Eval/loss", sum(losses) / len(losses), self.step)
-        self.model.train()
+        self.writer.add_scalar("loss/eval", sum(losses) / len(losses), self.step)
 
     def train(self, max_epoch):
-        # init the writer here to avoid redundant logging in a new instance
-        if self.writer is None:
-            self.writer = SummaryWriter(comment="_" + self.model_name)
+        self.model.train()
+        self.writer = self.writer or SummaryWriter(comment=f"_{self.model_name}")
 
         for epoch in tqdm(range(max_epoch)):
-            for x, y in tqdm(self.train_dl, leave=False):
-                output, loss = self.eval_single_batch(x, y)
+            for data in tqdm(self.train_dl, leave=False):
+                output, loss = self.eval_single_batch(data)
 
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
                 
-                self.writer.add_scalar("Train/loss", loss, self.step)
+                self.writer.add_scalar("loss/train", loss, self.step)
                 self.step += 1
 
                 if self.step % self.save_freq == 0:
