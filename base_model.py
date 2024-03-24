@@ -3,9 +3,8 @@ from tqdm import tqdm
 
 import torch
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 
-from utils import CharDataset
+from utils import get_writer, CharDataset
 
 
 class BaseLanguageModel:
@@ -20,6 +19,7 @@ class BaseLanguageModel:
         block_size=200,
         eval_freq=200,
         save_freq=5000,
+        log_freq=500,
         train_portion=0.98
     ):
         self.dataset = dataset
@@ -28,6 +28,7 @@ class BaseLanguageModel:
         self.block_size = block_size
         self.eval_freq = eval_freq
         self.save_freq = save_freq
+        self.log_freq = log_freq
         self.train_portion = train_portion
 
         self.step = 0
@@ -93,31 +94,38 @@ class BaseLanguageModel:
     @torch.no_grad()
     def evaluate(self):
         self.model.eval()
-        losses = []
-        for x, y in self.valid_dl:
-            output, loss = self.eval_single_batch(x, y)
-            losses.append(loss.item())
-
-        self.writer.add_scalar("loss/eval", sum(losses) / len(losses), self.step)
+        loss_ = 0.0
+        for sequence in self.valid_dl:
+            output, loss = self.eval_single_batch(sequence)
+            loss_ += loss.item()
+        
+        self.writer.add_scalar("loss/valid", loss_ / len(self.valid_dl), self.step)
+        self.writer.add_text("sample", self.generate(100), self.step)
+        
 
     def train(self, max_epoch):
         self.model.train()
-        self.writer = self.writer or SummaryWriter(comment=f"_{self.model_name}")
+        self.writer = self.writer or get_writer(self.model_name, self.dataset)
+        loss_ = 0.0
 
         for epoch in tqdm(range(max_epoch)):
-            for data in tqdm(self.train_dl, leave=False):
-                output, loss = self.eval_single_batch(data)
+            for sequence in tqdm(self.train_dl, leave=False):
+                output, loss = self.eval_single_batch(sequence)
 
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
                 
-                self.writer.add_scalar("loss/train", loss, self.step)
                 self.step += 1
+                loss_ += loss.item()
+                
+                if self.step % self.log_freq == 0:
+                    self.writer.add_scalar("loss/train", loss_ / self.log_freq, self.step)
+                    loss_ = 0.0
 
-                if self.step % self.save_freq == 0:
-                    self.save_model()
+                    if self.step % self.save_freq == 0:
+                        self.save_model()
 
-                if self.step % self.eval_freq == 0:
-                    self.evaluate()
+                    if self.step % self.eval_freq == 0:
+                        self.evaluate()
                 
