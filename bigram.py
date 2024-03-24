@@ -8,10 +8,10 @@ from base_model import BaseLanguageModel
 class Bigram(BaseLanguageModel):
     def __init__(self, model_path=None):
         super().__init__(
-            dataset="tinyshakespeare.txt",
+            dataset="nizami.txt",
             model_name="bigram",
             batch_size=64,
-            eval_freq=200,
+            eval_freq=5000,
             save_freq=5000,
             block_size=1,
         )
@@ -32,10 +32,10 @@ class Bigram(BaseLanguageModel):
         x = torch.multinomial(x, 1)[0]
         return x, hidden
 
-    def eval_single_batch(self, x, y):
-        output = self.model(x)
+    def eval_single_batch(self, seq):
+        output = self.model(seq[:-1])
         output = output.view(-1, self.n_vocab)
-        y = y.view(-1)
+        y = seq[1:].view(-1)
         loss = F.cross_entropy(output, y)
         return output, loss
 
